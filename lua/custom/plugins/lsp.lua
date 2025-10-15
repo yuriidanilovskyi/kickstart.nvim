@@ -60,27 +60,21 @@ return {
       }
 
       -- Configure LSP servers
-      local lspconfig = require('lspconfig')
       local capabilities = require('blink.cmp').get_lsp_capabilities()
-      
+
       -- Add custom cspell-lsp server configuration
-      local configs = require('lspconfig.configs')
-      if not configs.cspell then
-        configs.cspell = {
-          default_config = {
-            cmd = { 'cspell-lsp', '--stdio' },
-            filetypes = { 'c', 'cpp', 'lua', 'python', 'javascript', 'typescript', 'markdown', 'text', 'json', 'yaml', 'html', 'css' },
-            root_dir = lspconfig.util.root_pattern('.git', '.'),
-            single_file_support = true,
-            settings = {
-              cspell = {
-                enabledLanguageIds = { 'c', 'cpp', 'lua', 'python', 'javascript', 'typescript', 'markdown', 'text', 'json', 'yaml', 'html', 'css' },
-              },
-            },
+      vim.lsp.config.cspell = {
+        cmd = { 'cspell-lsp', '--stdio' },
+        filetypes = { 'c', 'cpp', 'lua', 'python', 'javascript', 'typescript', 'markdown', 'text', 'json', 'yaml', 'html', 'css' },
+        root_markers = { '.git' },
+        single_file_support = true,
+        settings = {
+          cspell = {
+            enabledLanguageIds = { 'c', 'cpp', 'lua', 'python', 'javascript', 'typescript', 'markdown', 'text', 'json', 'yaml', 'html', 'css' },
           },
-        }
-      end
-      
+        },
+      }
+
       local servers = {
         clangd = {
           cmd = {
@@ -124,7 +118,7 @@ return {
       -- Setup each server
       for server_name, config in pairs(servers) do
         config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
-        lspconfig[server_name].setup(config)
+        vim.lsp.enable(server_name, config)
       end
     end,
   },
